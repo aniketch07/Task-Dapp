@@ -13,8 +13,10 @@ const Dashboard = () => {
   const [status, setStatus] = useState("");
   const [gasFee, setGasFee] = useState("");
   const router = useRouter();
+  const [transactionHash, settransactionHash] = useState("")
   const { address, isConnected } = useAccount();
-  getGasFee("0x4A1d9be621F93A51d12a10fcef34F6CA321391Ff",ethers.utils.parseUnits(String(200), 18));
+  const {data}=useWaitForTransactionReceipt({hash:transactionHash as any})
+  // getGasFee("0x4A1d9be621F93A51d12a10fcef34F6CA321391Ff",ethers.utils.parseUnits(String(200), 18));
   useEffect(() => {
   
     const fetchBalance = async () => {
@@ -33,9 +35,18 @@ const Dashboard = () => {
     };
 
     fetchBalance();
-  }, [address]);
+  }, [address,status]);
 
-
+  useEffect(()=>{
+    if(data){
+      console.log(data,'entry')
+      setStatus("✅ Transfer successful!");
+      setRecipient("");
+      setAmount("");
+      settransactionHash("")
+      setIsLoading(false);
+    }
+  },[data])
   
 
   // Inside the Dashboard component
@@ -57,20 +68,18 @@ const Dashboard = () => {
   
     try {
       const parsedAmount = ethers.utils.parseUnits(amount, 18);
-      await transfer(recipient, parsedAmount);
-  
-      setStatus("✅ Transfer successful!");
-      setRecipient("");
-      setAmount("");
-  
-      const updatedBalance = await getBalance(address);
-      setBalance(ethers.utils.formatUnits(updatedBalance, 18));
+      const res=await transfer(recipient, parsedAmount);
+      if(res.hash){
+        settransactionHash(res?.hash)
+      }
+      console.log(res?.hash,'value res')
+
     } catch (error) {
       console.error("❌ Transfer failed:", error);
       setStatus("🚨 Transfer failed. Please try again.");
+      setIsLoading(false);
     }
   
-    setIsLoading(false);
   }, [address, recipient, amount, balance, isLoading]);
 
   return (
@@ -107,7 +116,7 @@ const Dashboard = () => {
               Available Balance:
             </div>
             <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "#03DAC6" }}>
-              {balance} {symbol}
+              {balance!=="" ? balance:'Loading Balance..'} {symbol}
             </div>
           </div>
 
@@ -116,7 +125,9 @@ const Dashboard = () => {
               type="text"
               placeholder="Recipient Address"
               value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
+              onChange={(e) => {setRecipient(e.target.value)
+                setStatus("")
+              }}
               style={{
                 padding: "0.75rem",
                 borderRadius: "10px",
@@ -131,7 +142,9 @@ const Dashboard = () => {
               type="number"
               placeholder="Amount"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => {setAmount(e.target.value)
+                setStatus("")
+              }}
               style={{
                 padding: "0.75rem",
                 borderRadius: "10px",
