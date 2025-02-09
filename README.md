@@ -1,6 +1,27 @@
 # ABCToken ERC20 Contract and dApp
+### Dapp is deployed on :  
+# Table of Contents
 
-Dapp is deployed on : 
+1. [Project Overview](#project-overview)  
+2. [Contract Deployment](#contract-deployment)  
+3. [Contract Interaction](#contract-interaction)  
+4. [Features](#features)  
+   - [ERC20 Contract](#erc20-contract)  
+   - [dApp](#dapp)  
+5. [ERC20 Contract Details](#erc20-contract-details)  
+   - [Requirements](#requirements)  
+   - [Implementation Details](#implementation-details)  
+   - [Functions](#functions)  
+6. [dApp Features](#dapp-features)  
+   - [How It Works](#how-it-works)  
+7. [Installation](#installation)  
+   - [Prerequisites](#prerequisites)  
+   - [Steps](#steps)  
+8. [Usage](#usage)  
+9. [Note](#note)  
+10. [Screenshots](#screenshots)  
+
+### project-overview
 
 ### Contract Deployment
 The contract is deployed on the Holesky testnet at the following address:
@@ -128,3 +149,32 @@ Contract Address: 0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC
 ### Note:
 - To add Holesky testnet to your metamask follow the following link: https://revoke.cash/learn/wallets/add-network/ethereum-holesky
 - And fund your wallet some test ETH from this website: https://cloud.google.com/application/web3/faucet/ethereum/holesky
+
+## Screenshots
+
+### Screenshot 1
+![Screenshot 1](screenshots/Screenshot%202025-02-09%20113053.png)
+
+### Screenshot 2
+![Screenshot 2](screenshots/Screenshot%202025-02-09%20113108.png)
+
+### Screenshot 3
+![Screenshot 3](screenshots/Screenshot%202025-02-09%20113217.png)
+
+### Screenshot 4
+![Screenshot 4](screenshots/Screenshot%202025-02-09%20113244.png)
+
+### Screenshot 5
+![Screenshot 5](screenshots/Screenshot%202025-02-09%20113304.png)
+
+### Screenshot 6
+![Screenshot 6](screenshots/Screenshot%202025-02-09%20113340.png)
+
+### Screenshot 7
+![Screenshot 7](screenshots/Screenshot%202025-02-09%20113404.png)
+
+### Screenshot 8
+![Screenshot 8](screenshots/Screenshot%202025-02-09%20113418.png)
+
+### Screenshot 9
+![Screenshot 9](screenshots/Screenshot%202025-02-09%20113430.png)
