@@ -26,10 +26,10 @@ export const getSymbol=async()=>{
 export const getGasFee=async(address: string, amount: ethers.BigNumber)=>{
     try {
         //const provider=new ethers.providers.JsonRpcProvider('https://eth-holesky.g.alchemy.com/v2/CW-1OsQTxd4jCJJQjHsTzPvG827ibygn')
-        const provider = ethers.getDefaultProvider();
+        const provider=new ethers.providers.JsonRpcProvider('https://eth-holesky.g.alchemy.com/v2/CW-1OsQTxd4jCJJQjHsTzPvG827ibygn')
         const contract=new ethers.Contract('0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC',abi,provider)
         const estimation = await contract.estimateGas.transfer(address, amount);
-        console.log(Number(estimation));
+        //console.log(Number(estimation));
         return estimation
     } catch (error) {
         console.log(error,'err in getting fee')

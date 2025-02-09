@@ -9,14 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^5.2.0",
     "@rainbow-me/rainbowkit": "^2.2.3",
     "@tanstack/react-query": "^5.66.0",
+    "alchemy-sdk": "^3.5.2",
+    "bn": "^1.0.5",
     "ethers": "5.5.1",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "viem": "2.x",
-    "wagmi": "^2.14.9"
+    "wagmi": "^2.14.9",
+    "web3": "^4.16.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

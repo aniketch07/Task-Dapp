@@ -37,7 +37,7 @@ const Navbar = () => {
           }}
           style={{ cursor: "pointer" }}
         >
-          Task 2 Dapp
+         Token Dapp
         </text>
       </div>
       {walletDropdownSelected && address && (

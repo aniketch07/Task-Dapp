@@ -1,9 +1,9 @@
-import { getBalance, getSymbol, transfer,getGasFee } from "@/blockchain/scripts/abc";
+import { getBalance, getSymbol, transfer, getGasFee } from "@/blockchain/scripts/abc";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useAccount , useWaitForTransactionReceipt} from "wagmi";
-import { useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+
 const Dashboard = () => {
   const [balance, setBalance] = useState("");
   const [recipient, setRecipient] = useState("");
@@ -11,80 +11,97 @@ const Dashboard = () => {
   const [symbol, setSymbol] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState("");
-  const [gasFee, setGasFee] = useState("");
+  const [gasFee, setGasFeeState] = useState("");
   const router = useRouter();
-  const [transactionHash, settransactionHash] = useState("")
+  const [transactionHash, setTransactionHash] = useState("");
   const { address, isConnected } = useAccount();
-  const {data}=useWaitForTransactionReceipt({hash:transactionHash as any})
-  // getGasFee("0x4A1d9be621F93A51d12a10fcef34F6CA321391Ff",ethers.utils.parseUnits(String(200), 18));
+  const { data } = useWaitForTransactionReceipt({ hash: transactionHash as any });
+
   useEffect(() => {
-  
     const fetchBalance = async () => {
       if (!address) return;
-
       try {
         const res = await getBalance(address);
         const symbol = await getSymbol();
         const balanceInEther = ethers.utils.formatUnits(res, 18);
-
         setSymbol(symbol);
         setBalance(balanceInEther);
       } catch (error) {
         console.error("Error fetching balance:", error);
       }
     };
-
     fetchBalance();
-  }, [address,status]);
+  }, [address, status]);
 
-  useEffect(()=>{
-    if(data){
-      console.log(data,'entry')
+  useEffect(() => {
+    if (data) {
+      console.log(data, 'entry');
       setStatus("✅ Transfer successful!");
       setRecipient("");
       setAmount("");
-      settransactionHash("")
+      setTransactionHash("");
       setIsLoading(false);
     }
-  },[data])
-  
+  }, [data]);
 
-  // Inside the Dashboard component
+  useEffect(() => {
+    const fetchGasFee = async () => {
+      if (ethers.utils.isAddress(recipient) && parseFloat(amount) > 0) {
+        try {
+          const fee = await getGasFee(recipient, ethers.utils.parseUnits(amount, 18));
+          if (fee) {
+            setGasFeeState(ethers.utils.formatUnits(fee, 18));
+          } else {
+            setGasFeeState("");
+          }
+        } catch (error) {
+          console.error("Error fetching gas fee:", error);
+          setGasFeeState("");
+        }
+      } else {
+        setGasFeeState("");
+      }
+    };
+    fetchGasFee();
+  }, [recipient, amount]);
+
   const handleTransfer = useCallback(async () => {
     if (!address || isLoading) return;
-  
+
     if (!ethers.utils.isAddress(recipient.trim())) {
       setStatus("Invalid recipient address.");
       return;
     }
-  
+    if (parseFloat(amount) > parseFloat(balance)) {
+      setStatus("Insufficient balance.");
+      return;
+    }
     if (parseFloat(amount) <= 0 || parseFloat(amount) > parseFloat(balance)) {
       setStatus("Invalid transfer amount.");
       return;
     }
-  
+
     setIsLoading(true);
     setStatus("");
-  
+
     try {
       const parsedAmount = ethers.utils.parseUnits(amount, 18);
-      const res=await transfer(recipient, parsedAmount);
-      if(res.hash){
-        settransactionHash(res?.hash)
+      const res = await transfer(recipient, parsedAmount);
+      if (res.hash) {
+        setTransactionHash(res.hash);
       }
-      console.log(res?.hash,'value res')
-
+      console.log(res.hash, 'value res');
     } catch (error) {
       console.error("❌ Transfer failed:", error);
       setStatus("🚨 Transfer failed. Please try again.");
       setIsLoading(false);
     }
-  
   }, [address, recipient, amount, balance, isLoading]);
 
   return (
     <div
       style={{
+        marginTop:"6rem",
         margin: "2rem auto",
         padding: "2rem",
         maxWidth: "600px",
@@ -96,7 +113,7 @@ const Dashboard = () => {
         transition: "all 0.3s ease-in-out",
       }}
     >
-      <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#FFFFFF", marginBottom:"1rem" }}>
+      <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#FFFFFF", marginBottom: "1rem" }}>
         Custom Token Dashboard
       </h1>
 
@@ -116,7 +133,7 @@ const Dashboard = () => {
               Available Balance:
             </div>
             <div style={{ fontSize: "1.75rem", fontWeight: "bold", color: "#03DAC6" }}>
-              {balance!=="" ? balance:'Loading Balance..'} {symbol}
+              {balance !== "" ? balance : 'Loading Balance..'} {symbol}
             </div>
           </div>
 
@@ -125,9 +142,7 @@ const Dashboard = () => {
               type="text"
               placeholder="Recipient Address"
               value={recipient}
-              onChange={(e) => {setRecipient(e.target.value)
-                setStatus("")
-              }}
+              onChange={(e) => { setRecipient(e.target.value); setStatus(""); }}
               style={{
                 padding: "0.75rem",
                 borderRadius: "10px",
@@ -142,9 +157,7 @@ const Dashboard = () => {
               type="number"
               placeholder="Amount"
               value={amount}
-              onChange={(e) => {setAmount(e.target.value)
-                setStatus("")
-              }}
+              onChange={(e) => { setAmount(e.target.value); setStatus(""); }}
               style={{
                 padding: "0.75rem",
                 borderRadius: "10px",
@@ -155,20 +168,26 @@ const Dashboard = () => {
                 transition: "border 0.3s ease",
               }}
             />
-            
+
+{gasFee && (
+  <div style={{ color: "#03DAC6", fontSize: "0.8rem", marginTop: "0.5rem" }}>
+    Estimated Gas Fee: {gasFee} ETH
+  </div>
+)}
+
             <button
               onClick={handleTransfer}
-              disabled={isLoading || parseFloat(balance) === 0}
+              disabled={isLoading || (balance === "0.0")}
               style={{
                 padding: "0.75rem",
-                backgroundColor: isLoading ? "#555" : "#BB86FC",
+                backgroundColor: isLoading || (balance === "0.0") ? "#555" : "#BB86FC",
                 color: "#FFF",
                 border: "none",
                 borderRadius: "10px",
                 fontWeight: "bold",
-                cursor: isLoading ? "not-allowed" : "pointer",
+                cursor: isLoading || (balance === "0.0") ? "not-allowed" : "pointer",
                 transition: "background 0.3s ease, transform 0.2s ease",
-                transform: isLoading ? "scale(0.98)" : "scale(1)",
+                transform: isLoading || (balance === "0.0") ? "scale(0.98)" : "scale(1)",
               }}
             >
               {isLoading ? "Sending..." : "Send Tokens"}
