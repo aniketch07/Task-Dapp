@@ -1,40 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# ABCToken ERC20 Contract and dApp
 
-## Getting Started
+Dapp is deployed on : 
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Contract Deployment
+The contract is deployed on the Holesky testnet at the following address:
+```
+Contract Address: 0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Contract Interaction
+- You can interact with the contract from the following link : https://holesky.etherscan.io/address/0xa4ee3decd52adfe9b13fb88cb0cbf302a73522cc
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+This project consists of two main components:
+1. An ERC20 token contract named `ABCToken` with the symbol `ABC`, which manages a list of token holders dynamically.
+2. A decentralized application (dApp) that allows users to transfer `ABCToken` after connecting their wallet, with additional features like gas fee estimation and balance validation.
+---
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### ERC20 Contract
+- Dynamically manages a list of token holders.
+- Adds a holder to the list when they receive a balance greater than 0.
+- Removes a holder from the list when their balance drops to 0.
+- Provides functions to:
+  - Get the total number of holders (`noOfHolders`).
+  - Retrieve the current list of holders as an array.
 
-## Learn More
+### DApp
+- Allows users to connect their wallet (e.g., MetaMask).
+- Enables transferring `ABCToken` by entering the recipient's address and amount.
+- Disables the transfer button if the user has insufficient balance.
+- Displays the estimated gas fee in the blockchain's native coin (e.g., ETH for Ethereum).
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+## ERC20 Contract
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Requirements
+1. The contract should be named `ABCToken` with the symbol `ABC`.
+2. It should support up to 5,000 unique holders.
+3. Holders should be added to the list when their balance changes from 0 to a positive value.
+4. Holders should be removed from the list when their balance drops to 0.
+5. Provide two functions:
+   - `noOfHolders()`: Returns the total number of holders.
+   - `getHolders()`: Returns an array of current holders.
 
-## Deploy on Vercel
+### Implementation Details
+- The contract uses a mapping to track balances and a dynamic array to store holders.
+- When a transfer occurs, the contract checks if the sender's balance drops to 0 and removes them from the holders list.
+- Similarly, if the recipient's balance increases from 0, they are added to the holders list.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Functions
+```solidity
+// Returns the total number of holders
+function noOfHolders() public view returns (uint256);
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+// Returns an array of current holders
+function getHolders() public view returns (address[] memory);
+```
+
+### Contract
+```bash
+You can find contract in contracts/ABCToken.sol
+```
+### Dapp
+### dApp Features
+- Wallet connection using MetaMask or similar wallets.
+- Input fields for recipient address and transfer amount.
+- Disables the transfer button if the user has insufficient balance.
+- Displays the estimated gas fee for the transaction.
+
+### How It Works
+1. The user connects their wallet to the dApp.
+2. The dApp fetches the user's ABCToken balance and displays it.
+3. The user enters the recipient's address and the amount to transfer.
+4. The dApp checks if the user has sufficient balance and estimates the gas fee.
+5. If the balance is sufficient, the transfer button is enabled, and the user can initiate the transaction.
+6. After the transaction is confirmed, the dApp updates the user's balance and refreshes the UI.
+
+
+### Installation
+### Prerequisites
+- Node.js and npm installed.
+- MetaMask or a similar wallet installed in your browser.
+- Hardhat or Truffle for smart contract development (optional).
+
+Steps:
+Clone the repository:
+
+```bash
+git clone https://github.com/aniketch07/Task-Dapp.git
+cd Task-Dapp
+```
+Install dependencies:
+
+```bash
+npm install
+```
+Compile and deploy the ABCToken contract:
+
+``` bash
+npx hardhat compile
+npx hardhat run scripts/deploy.js --network <network-name>
+```
+Start the dApp:
+
+``` bash
+npm run dev
+```
+### Usage
+- Open the dApp in your browser.
+- Connect your wallet.
+- Enter the recipient's address and the amount to transfer.
+- Review the estimated gas fee and click "Transfer" if the button is enabled.
+- Confirm the transaction in your wallet.
+
+### Contract Deployment
+The contract is deployed on the Holesky testnet at the following address:
+```
+Contract Address: 0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC
+```
+
+### Contract Interaction
+- You can interact with the contract from the following link : https://holesky.etherscan.io/address/0xa4ee3decd52adfe9b13fb88cb0cbf302a73522cc
+
+### Note:
+- To add Holesky testnet to your metamask follow the following link: https://revoke.cash/learn/wallets/add-network/ethereum-holesky
+- And fund your wallet some test ETH from this website: https://cloud.google.com/application/web3/faucet/ethereum/holesky
