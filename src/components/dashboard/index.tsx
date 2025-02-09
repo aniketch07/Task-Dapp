@@ -18,6 +18,15 @@ const Dashboard = () => {
   const { data } = useWaitForTransactionReceipt({ hash: transactionHash as any });
 
   useEffect(() => {
+    if (!isConnected) {
+      setStatus("");
+      setTransactionHash("");
+      setRecipient("");
+      setAmount("");
+      setGasFeeState("");
+    }
+  }, [isConnected]);
+  useEffect(() => {
     const fetchBalance = async () => {
       if (!address) return;
       try {
