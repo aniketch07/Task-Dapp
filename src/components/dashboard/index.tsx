@@ -48,12 +48,8 @@ const Dashboard = () => {
     const fetchGasFee = async () => {
       if (ethers.utils.isAddress(recipient) && parseFloat(amount) > 0) {
         try {
-          const fee = await getGasFee(recipient, ethers.utils.parseUnits(amount, 18));
-          if (fee) {
-            setGasFeeState(ethers.utils.formatUnits(fee, 18));
-          } else {
-            setGasFeeState("");
-          }
+          const fee = await getGasFee(recipient, amount);
+          setGasFeeState(fee || "");
         } catch (error) {
           console.error("Error fetching gas fee:", error);
           setGasFeeState("");
@@ -62,6 +58,7 @@ const Dashboard = () => {
         setGasFeeState("");
       }
     };
+
     fetchGasFee();
   }, [recipient, amount]);
 
@@ -170,10 +167,11 @@ const Dashboard = () => {
             />
 
 {gasFee && (
-  <div style={{ color: "#03DAC6", fontSize: "0.8rem", marginTop: "0.5rem" }}>
-    Estimated Gas Fee: {gasFee} ETH
+  <div style={{ color: "#36454F", fontSize: "0.8rem", marginTop: "0.5rem", textAlign: "left" }}>
+    Estimated Fee: {gasFee} ETH
   </div>
 )}
+
 
             <button
               onClick={handleTransfer}
@@ -195,7 +193,7 @@ const Dashboard = () => {
           </div>
         </>
       ) : (
-        <div style={{ color: "#CF6679" }}>Please connect your wallet to view your dashboard.</div>
+        <div style={{ marginTop:"3rem",marginBottom:"3rem",color: "#CF6679" }}>Please connect your wallet to view your dashboard.</div>
       )}
 
       {status && (

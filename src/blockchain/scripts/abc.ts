@@ -1,78 +1,80 @@
-import {ethers} from "ethers";
-import abi from '../abis/ABCToken.json'
+import { ethers } from "ethers";
+import abi from '../abis/ABCToken.json';
 
-export const getBalance=async(address: string)=>{
+const provider = new ethers.providers.JsonRpcProvider('https://eth-holesky.g.alchemy.com/v2/CW-1OsQTxd4jCJJQjHsTzPvG827ibygn');
+const contractAddress = '0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC';
+
+export const getBalance = async (address: string) => {
     try {
-        const provider=new ethers.providers.JsonRpcProvider('https://eth-holesky.g.alchemy.com/v2/CW-1OsQTxd4jCJJQjHsTzPvG827ibygn')
-        const contract=new ethers.Contract('0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC',abi,provider)
-        const balance=await contract.balanceOf(address)
-        return balance
+        const contract = new ethers.Contract(contractAddress, abi, provider);
+        const balance = await contract.balanceOf(address);
+        return balance;
     } catch (error) {
-        console.log(error,'err in getting balance')
+        console.error(error, 'Error in getting balance');
     }
-}
+};
 
-export const getSymbol=async()=>{
+export const getSymbol = async () => {
     try {
-        const provider=new ethers.providers.JsonRpcProvider('https://eth-holesky.g.alchemy.com/v2/CW-1OsQTxd4jCJJQjHsTzPvG827ibygn')
-        const contract=new ethers.Contract('0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC',abi,provider)
-        const symbol=await contract.symbol();
-        return symbol
+        const contract = new ethers.Contract(contractAddress, abi, provider);
+        const symbol = await contract.symbol();
+        return symbol;
     } catch (error) {
-        console.log(error,'err in getting symbol')
+        console.error(error, 'Error in getting symbol');
     }
-}
+};
 
-export const getGasFee=async(address: string, amount: ethers.BigNumber)=>{
+export const getGasFee = async (recipient: string, amount: string) => {
     try {
-        //const provider=new ethers.providers.JsonRpcProvider('https://eth-holesky.g.alchemy.com/v2/CW-1OsQTxd4jCJJQjHsTzPvG827ibygn')
-        const provider=new ethers.providers.JsonRpcProvider('https://eth-holesky.g.alchemy.com/v2/CW-1OsQTxd4jCJJQjHsTzPvG827ibygn')
-        const contract=new ethers.Contract('0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC',abi,provider)
-        const estimation = await contract.estimateGas.transfer(address, amount);
-        //console.log(Number(estimation));
-        return estimation
-    } catch (error) {
-        console.log(error,'err in getting fee')
-    }
-}
+        if (!window.ethereum) throw new Error("MetaMask is not installed.");
 
-export const getHoldersAddress=async()=>{
-    try {
-        const provider=new ethers.providers.JsonRpcProvider('https://eth-holesky.g.alchemy.com/v2/CW-1OsQTxd4jCJJQjHsTzPvG827ibygn')
-        const contract=new ethers.Contract('0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC',abi,provider)
-        const holders=await contract.getHolders();
-        console.log(holders);
-        return holders
-        
-    } catch (error) {
-        console.log(error,'err in getting symbol')
-    }
-}
-
-export const getNumberOfHolders=async()=>{
-    try {
-        const provider=new ethers.providers.JsonRpcProvider('https://eth-holesky.g.alchemy.com/v2/CW-1OsQTxd4jCJJQjHsTzPvG827ibygn')
-        const contract=new ethers.Contract('0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC',abi,provider)
-        const noOfholders=await contract.noOfHolders();
-        console.log(Number(noOfholders));
-        return noOfholders
-        
-    } catch (error) {
-        console.log(error,'err in getting symbol')
-    }
-}
-
-
-export const transfer=async(address: string, amount: ethers.BigNumber)=>{
-    try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        
         const signer = provider.getSigner();
-        const contract=new ethers.Contract('0xA4eE3dECD52ADfE9B13fB88cb0CBf302a73522CC',abi,signer);
-        const res=await contract.transfer(address,amount);
-        return res
-    } catch (error) {
-        console.log(error,'err in getting symbol')
-    }
-}
+        const contract = new ethers.Contract(contractAddress, abi, signer);
 
+        const gasLimit = await contract.estimateGas.transfer(recipient, ethers.utils.parseUnits(amount, 18));
+        const gasPrice = await provider.getGasPrice();
+
+        const fee = ethers.utils.formatUnits(gasLimit.mul(gasPrice), 18);
+        return fee;
+    } catch (error) {
+        console.error(error, 'Error in calculating gas fee');
+    }
+};
+
+export const getHoldersAddress = async () => {
+    try {
+        const contract = new ethers.Contract(contractAddress, abi, provider);
+        const holders = await contract.getHolders();
+        return holders;
+    } catch (error) {
+        console.error(error, 'Error in getting holders address');
+    }
+};
+
+export const getNumberOfHolders = async () => {
+    try {
+        const contract = new ethers.Contract(contractAddress, abi, provider);
+        const holders = await contract.noOfHolders();
+        console.log(Number(holders));
+        return holders;
+    } catch (error) {
+        console.error(error, 'Error in getting number of holders');
+    }
+};
+
+export const transfer = async (address: string, amount: ethers.BigNumber) => {
+    try {
+        if (!window.ethereum) throw new Error("MetaMask is not installed.");
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(contractAddress, abi, signer);
+
+        const tx = await contract.transfer(address, amount);
+        await tx.wait();  // Wait for confirmation
+        return tx;
+    } catch (error) {
+        console.error(error, 'Error in transferring tokens');
+    }
+};

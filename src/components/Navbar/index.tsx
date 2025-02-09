@@ -1,15 +1,14 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import React, { useState } from "react";
+import React from "react";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useAccount, useDisconnect } from "wagmi";
 import { useRouter } from "next/router";
 
 const Navbar = () => {
-  const [walletDropdownSelected, setwalletDropdownSelected] =
-    useState<boolean>(false);
   const { address } = useAccount();
   const router = useRouter();
   const { disconnect } = useDisconnect();
+
   return (
     <div
       style={{
@@ -17,7 +16,7 @@ const Navbar = () => {
         width: "100%",
         justifyContent: "space-between",
         padding: "1rem 2rem",
-        background: "#0B0C14",
+        background: "#212121",
         alignItems: "center",
       }}
     >
@@ -25,8 +24,7 @@ const Navbar = () => {
         style={{
           fontSize: "20px",
           fontWeight: "700",
-          // cursor: "pointer",
-          color: "#3FE0B2",
+          color: "#FFFFFF",
           display: "flex",
           gap: "2rem",
         }}
@@ -37,43 +35,36 @@ const Navbar = () => {
           }}
           style={{ cursor: "pointer" }}
         >
-         Token Dapp
+          TOKEN DAPP
         </text>
       </div>
-      {walletDropdownSelected && address && (
-        <div
-          style={{
-            position: "fixed",
-            right: "2rem",
-            cursor: "pointer",
-            top: "4rem",
-            padding: " 0.5rem 1rem",
-            borderRadius: "6px",
-            background: "#0B0C14",
-            border: "1px solid #727DA133",
-          }}
-          onClick={() => {
-            setwalletDropdownSelected(false);
-            disconnect();
-          }}
-        >
-          Disconnect Wallet
-        </div>
-      )}
+
       {address ? (
-        <div
-          style={{
-            padding: "0.5rem 1rem",
-            cursor: "pointer",
-            borderRadius: "6px",
-            border: "1px solid #3FE0B2",
-          }}
-          onClick={() => {
-            setwalletDropdownSelected(!walletDropdownSelected);
-          }}
-        >
-          {address.substring(0, 5)}...
-          {address.substring(address.length - 5, address.length)}
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          <div
+            style={{
+              padding: "0.5rem 1rem",
+              borderRadius: "6px",
+              border: "1px solid #3FE0B2",
+              color: "#FFFFFF",
+              background: "#0B0C14",
+            }}
+          >
+            {address.substring(0, 5)}...{address.substring(address.length - 5)}
+          </div>
+          <button
+            style={{
+              padding: "0.5rem 1rem",
+              borderRadius: "6px",
+              border: "1px solid #FF4C4C",
+              background: "#FF4C4C",
+              color: "#FFFFFF",
+              cursor: "pointer",
+            }}
+            onClick={() => disconnect()}
+          >
+            Disconnect
+          </button>
         </div>
       ) : (
         <ConnectButton />
